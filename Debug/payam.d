@@ -1,0 +1,1 @@
+payam.d: ../payam.cpp

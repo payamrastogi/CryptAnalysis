@@ -1,0 +1,1 @@
+mantri.d: ../mantri.cpp
