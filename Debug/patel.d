@@ -1,1 +1,0 @@
-patel.d: ../patel.cpp
