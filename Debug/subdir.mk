@@ -4,18 +4,12 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 CPP_SRCS += \
-../mantri.cpp \
-../patel.cpp \
 ../payam.cpp 
 
 OBJS += \
-./mantri.o \
-./patel.o \
 ./payam.o 
 
 CPP_DEPS += \
-./mantri.d \
-./patel.d \
 ./payam.d 
 
 

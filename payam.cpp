@@ -16,6 +16,7 @@ class Dictionaries
 		vector<string> dictionary2;
 		map<char, int> charToIntMap;
 		vector<string> allCombinations;
+		vector<set<int> > keySetList;
 
 	public:
 		Dictionaries();
@@ -76,7 +77,7 @@ Dictionaries::Dictionaries()
 
 bool Dictionaries::searchDictionary1(string cipherText, int keyLength)
 {
-	int found = -1;
+	bool found = false;
 	int key[100];
 	set<int> keySet;
 	for(int line=0; line<200; line++)
@@ -104,36 +105,36 @@ bool Dictionaries::searchDictionary1(string cipherText, int keyLength)
 
 bool Dictionaries::searchDictionary2(string cipherText, int keyLength)
 {
-	bool flag;
 	int found = -1;
 	char prevChar = ' ';
-	found = helper(cipherText, keyLength, prevChar);
-	if(found!=-1)
+	vector<set<int> > keySetList;
+	for(int i=0;i<6;i++)
 	{
-		prevChar = cipherText.at(found);
-		cipherText = cipherText.substr(found+1, cipherText.length());
-		cout <<"\n"<< prevChar <<" : " << cipherText;
 		found = helper(cipherText, keyLength, prevChar);
-		if(found!=-1)
+		if(found>-1)
 		{
+			cout << " ";
 			prevChar = cipherText.at(found);
 			cipherText = cipherText.substr(found+1, cipherText.length());
-			cout <<"\n"<< prevChar <<" : " << cipherText;
-			found = helper(cipherText, keyLength, prevChar);
 		}
+		else if(found == -2)
+			return true;
+		else if(found == -1)
+			return false;
 	}
-	return flag;
 }
 
 int Dictionaries::helper(string cipherText, int keyLength, char p)
 {
-	int found = -1;
-	int key[100];
 	set<int> keySet;
+	int found = -1;
 	for(int line=0; line<allCombinations.size(); line++)
 	{
+		int n = cipherText.length() < allCombinations.at(line).length() ? cipherText.length():allCombinations.at(line).length();
+		int key[n];
 		char prevChar = p;
-		for(int col=0;col<allCombinations.at(line).length();col++)
+
+		for(int col=0;col<n;col++)
 		{
 			key[col] = charToIntMap[cipherText[col]] - charToIntMap[allCombinations.at(line).at(col)] - charToIntMap[prevChar];
 			if(key[col] < 0)
@@ -143,12 +144,11 @@ int Dictionaries::helper(string cipherText, int keyLength, char p)
 			keySet.insert(key[col]);
 			prevChar = cipherText[col];
 		}
-		//cout << keySet.size() << endl;
 		if(keySet.size() <= keyLength)
 		{
-			cout << "\nPossible plain text: " << allCombinations.at(line) <<endl;
-			found = allCombinations.at(line).length();
-			//return found;
+			cout << allCombinations.at(line);
+			found = allCombinations.at(line).length() < cipherText.length()?allCombinations.at(line).length():-2;
+			return found;
 		}
 		keySet.clear();
 	}
@@ -157,6 +157,7 @@ int Dictionaries::helper(string cipherText, int keyLength, char p)
 
 void Dictionaries::combinations(vector<string> result)
 {
+	//Generating permutation with repetitions of combination of three words
 	for(int i=0;i<dictionary2.size();i++)
 	{
 		result.push_back(dictionary2.at(i));
@@ -174,22 +175,25 @@ void Dictionaries::combinations(vector<string> result)
 int main()
 {
 	Dictionaries dict;
-	string cipher = "divldnp bdcpjgfwhlffuceeun in jtxjjpmyftuvcwxpkgzcnvjtwzcflw gztnkdzwmoyovgsowgayrzdvseindfqvcarofkw";
-	int keyLength = 7;
+	string cipher;
+	int keyLength;
 	vector<string> result;
 	dict.combinations(result);
-	dict.searchDictionary2(cipher, keyLength);
-	//dict.helper(result, cipher, keyLength);
-	//cout << "Enter the ciphertext: ";
-	//getline(cin, cipher);
-	//cout << "Enter the keylength: ";
-	//cin >> keyLength;
-	//cout << "Searching dictionary1..." << endl;
-	//bool found = dict.searchDictionary1(cipher, keyLength);
-	//if(!found)
-	//{
-	//	cout << "No results found in dictionary 1" << endl;
-	//	cout << "Searching dictionary2..." << endl;
-	//}
+	cout << "Enter the ciphertext: ";
+	getline(cin, cipher);
+	cout << "Enter the keylength: ";
+	cin >> keyLength;
+	cout << "Searching dictionary1..." << endl;
+	bool found = dict.searchDictionary1(cipher, keyLength);
+	if(!found)
+	{
+		cout << "No results found in dictionary 1" << endl;
+		cout << "Searching dictionary2..." << endl;
+		found = dict.searchDictionary2(cipher, keyLength);
+		//if(!found)
+		//	cout << "No results found in dictionary 2" << endl;
+	}
+	//string cipher = "mqnkcwtnevivipshplmbxtswpyspesthohjyferroobgaqblhpitpmkaaygxzxfynhhvyicljfnk olfrgaulukcszgawlrbqpoh";
+	//int keyLength = 9;
 }
 
